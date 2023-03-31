@@ -224,6 +224,34 @@ export class WhiteDec__papersResult {
     map.set("value6", ethereum.Value.fromUnsignedBigInt(this.value6));
     return map;
   }
+
+  getTokenId(): BigInt {
+    return this.value0;
+  }
+
+  getOwner(): Address {
+    return this.value1;
+  }
+
+  getAuthor(): string {
+    return this.value2;
+  }
+
+  getTokenUri(): string {
+    return this.value3;
+  }
+
+  getAllowFunding(): boolean {
+    return this.value4;
+  }
+
+  getFundAmount(): BigInt {
+    return this.value5;
+  }
+
+  getTotalAmountFunded(): BigInt {
+    return this.value6;
+  }
 }
 
 export class WhiteDec extends ethereum.SmartContract {
@@ -490,6 +518,78 @@ export class ApproveCall__Outputs {
   }
 }
 
+export class FundapaperCall extends ethereum.Call {
+  get inputs(): FundapaperCall__Inputs {
+    return new FundapaperCall__Inputs(this);
+  }
+
+  get outputs(): FundapaperCall__Outputs {
+    return new FundapaperCall__Outputs(this);
+  }
+}
+
+export class FundapaperCall__Inputs {
+  _call: FundapaperCall;
+
+  constructor(call: FundapaperCall) {
+    this._call = call;
+  }
+
+  get _paperid(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class FundapaperCall__Outputs {
+  _call: FundapaperCall;
+
+  constructor(call: FundapaperCall) {
+    this._call = call;
+  }
+}
+
+export class PublishCall extends ethereum.Call {
+  get inputs(): PublishCall__Inputs {
+    return new PublishCall__Inputs(this);
+  }
+
+  get outputs(): PublishCall__Outputs {
+    return new PublishCall__Outputs(this);
+  }
+}
+
+export class PublishCall__Inputs {
+  _call: PublishCall;
+
+  constructor(call: PublishCall) {
+    this._call = call;
+  }
+
+  get tokenURI(): string {
+    return this._call.inputValues[0].value.toString();
+  }
+
+  get _author(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+
+  get _isfunding(): boolean {
+    return this._call.inputValues[2].value.toBoolean();
+  }
+
+  get _fundAmount(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+}
+
+export class PublishCall__Outputs {
+  _call: PublishCall;
+
+  constructor(call: PublishCall) {
+    this._call = call;
+  }
+}
+
 export class SafeTransferFromCall extends ethereum.Call {
   get inputs(): SafeTransferFromCall__Inputs {
     return new SafeTransferFromCall__Inputs(this);
@@ -557,7 +657,7 @@ export class SafeTransferFrom1Call__Inputs {
     return this._call.inputValues[2].value.toBigInt();
   }
 
-  get _data(): Bytes {
+  get data(): Bytes {
     return this._call.inputValues[3].value.toBytes();
   }
 }
@@ -638,78 +738,6 @@ export class TransferFromCall__Outputs {
   _call: TransferFromCall;
 
   constructor(call: TransferFromCall) {
-    this._call = call;
-  }
-}
-
-export class PublishCall extends ethereum.Call {
-  get inputs(): PublishCall__Inputs {
-    return new PublishCall__Inputs(this);
-  }
-
-  get outputs(): PublishCall__Outputs {
-    return new PublishCall__Outputs(this);
-  }
-}
-
-export class PublishCall__Inputs {
-  _call: PublishCall;
-
-  constructor(call: PublishCall) {
-    this._call = call;
-  }
-
-  get tokenURI(): string {
-    return this._call.inputValues[0].value.toString();
-  }
-
-  get _author(): string {
-    return this._call.inputValues[1].value.toString();
-  }
-
-  get _isfunding(): boolean {
-    return this._call.inputValues[2].value.toBoolean();
-  }
-
-  get _fundAmount(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
-  }
-}
-
-export class PublishCall__Outputs {
-  _call: PublishCall;
-
-  constructor(call: PublishCall) {
-    this._call = call;
-  }
-}
-
-export class FundapaperCall extends ethereum.Call {
-  get inputs(): FundapaperCall__Inputs {
-    return new FundapaperCall__Inputs(this);
-  }
-
-  get outputs(): FundapaperCall__Outputs {
-    return new FundapaperCall__Outputs(this);
-  }
-}
-
-export class FundapaperCall__Inputs {
-  _call: FundapaperCall;
-
-  constructor(call: FundapaperCall) {
-    this._call = call;
-  }
-
-  get _paperid(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class FundapaperCall__Outputs {
-  _call: FundapaperCall;
-
-  constructor(call: FundapaperCall) {
     this._call = call;
   }
 }

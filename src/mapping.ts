@@ -1,64 +1,99 @@
-import { BigInt, Value } from "@graphprotocol/graph-ts";
 import {
-  WhiteDec,
+  Approval as ApprovalEvent,
+  ApprovalForAll as ApprovalForAllEvent,
+  Funding as FundingEvent,
+  Published as PublishedEvent,
+  Transfer as TransferEvent,
+  UpdatePaper as UpdatePaperEvent
+} from "../generated/WhiteDec/WhiteDec"
+import {
   Approval,
   ApprovalForAll,
   Funding,
   Published,
   Transfer,
-  UpdatePaper,
-} from "../generated/WhiteDec/WhiteDec";
+  UpdatePaper
+} from "../generated/schema"
+import { Bytes } from "@graphprotocol/graph-ts"
 
-import { Paper, PaperFunding } from "../generated/schema";
+export function handleApproval(event: ApprovalEvent): void {
+  let paper = new Approval(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  paper.owner = event.params.owner
+  paper.approved = event.params.approved
+  paper.tokenId = event.params.tokenId
 
-export function handleApprovalForAll(event: ApprovalForAll): void {}
+  paper.blockNumber = event.block.number
+  paper.blockTimestamp = event.block.timestamp
+  paper.transactionHash = event.transaction.hash
 
-export function handleFunding(event: Funding): void {
-    let funding = new PaperFunding(event.transaction.hash.toHex() + "-" + event.logIndex.toString());
-    let paper = Paper.load(event.params.paperId.toHex());
+  paper.save()
+}
 
-    funding.paperid = event.params.paperId.toString();
-    funding.amount = event.params.amount.toString();
+export function handleApprovalForAll(event: ApprovalForAllEvent): void {
+  let paper = new ApprovalForAll(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  paper.owner = event.params.owner
+  paper.operator = event.params.operator
+  paper.approved = event.params.approved
+
+  paper.blockNumber = event.block.number
+  paper.blockTimestamp = event.block.timestamp
+  paper.transactionHash = event.transaction.hash
+
+  paper.save()
+}
+//////////////////DONE THIS ONE - funding.tokenUri left! 
+export function handleFunding(event: FundingEvent): void {
+  let funding = new Funding(Bytes.fromHexString(event.transaction.hash.toHex() + "-" + event.logIndex.toString()));
+  let paper = Funding.load(Bytes.fromHexString(event.params.paperId.toHex()));
+
+    funding.paperId = event.params.paperId;
+    funding.amount = event.params.amount
     funding.to = event.params.to;
     funding.from = event.params.from;
-    funding.tokenUri = paper.tokenUri.toString();
-    paper.totalAmountFunded = event.params.totalAmountFunded.toString();
+    // paper.totalAmountFunded = event.params.totalAmountFunded
 
     funding.save();
-    paper.save();
+    // paper.save();
 }
-
-export function handlePublished(event: Published): void {
-  // create a new instance of the paper.
-  let paper = new Paper(event.params.paperId.toHex());
-
-  // set paper with the corresponding parameters.
+////////////////////////////DONE ONLY paper.totalAmountFunded = "0"; left!
+export function handlePublished(event: PublishedEvent): void {
+  let funding = new Published(Bytes.fromHexString(event.transaction.hash.toHex() + "-" + event.logIndex.toString()));
+  let paper = new Published(Bytes.fromHexString(event.params.paperId.toHex()));
   paper.owner = event.params.owner;
-  paper.paperId = event.params.paperId.toString();
+  paper.paperId = event.params.paperId;
   paper.tokenUri = event.params.tokenUri;
   event.params.allowFunding == true
-    ? (paper.allowFunding = "true")
-    : (paper.allowFunding = "false");
+    ? (paper.allowFunding = true)
+    : (paper.allowFunding = false);
   paper.author = event.params.author;
-  paper.fundAmount = event.params.fundAmount.toString();
-  paper.totalAmountFunded = "0";
+  paper.fundAmount = event.params.fundAmount;
+  funding.tokenUri = paper.tokenUri
+  // paper.totalAmountFunded = "0";
 
-  paper.save();
+  paper.save()
+  funding.save()
 }
 
-export function handleTransfer(event: Transfer): void {}
+export function handleTransfer(event: TransferEvent): void {}
 
-export function handleUpdatePaper(event: UpdatePaper): void {
-  // get the paper id.
-  let id = event.params.paperId.toHex();
-  // get the paper.
-  let paper = Paper.load(id);
 
-  // update paper with new parameters.
-  paper.fundAmount = event.params.amount.toString();
+export function handleUpdatePaper(event: UpdatePaperEvent): void {
+  let paper = new UpdatePaper(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  paper.paperId = event.params.paperId
   event.params.allowFunding == true
-    ? (paper.allowFunding = "true")
-    : (paper.allowFunding = "false");
+    ? (paper.allowFunding = true)
+    : (paper.allowFunding = false);
+  paper.amount = event.params.amount
 
-  paper.save();
+  paper.blockNumber = event.block.number
+  paper.blockTimestamp = event.block.timestamp
+  paper.transactionHash = event.transaction.hash
+
+  paper.save()
 }
